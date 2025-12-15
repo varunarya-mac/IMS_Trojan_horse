@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
 import {
   IoAddOutline,
@@ -33,7 +34,11 @@ const chatItems: MenuItem[] = [
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [agentsExpanded, setAgentsExpanded] = useState(true);
+
+  const isExploreActive = location.pathname === '/explore' || location.pathname.startsWith('/flow/');
 
   const handleLogout = async () => {
     try {
@@ -61,11 +66,18 @@ const Sidebar = () => {
         </button>
 
         {/* Explore Button */}
-        <button className="w-full flex items-center gap-3 px-4 py-2 rounded-[10px] hover:bg-white transition-colors">
+        <button
+          onClick={() => navigate('/explore')}
+          className={`w-full flex items-center gap-3 px-4 py-2 rounded-[10px] transition-colors ${
+            isExploreActive ? 'bg-white shadow-sm' : 'hover:bg-white'
+          }`}
+        >
           <div className="w-[29px] h-[29px] flex items-center justify-center">
-            <IoCompassOutline className="w-5 h-5 text-[#1D2441]" />
+            <IoCompassOutline className={`w-5 h-5 ${isExploreActive ? 'text-[#248CD0]' : 'text-[#1D2441]'}`} />
           </div>
-          <span className="font-open-sans font-bold text-sm text-[#000000]">Explore</span>
+          <span className={`font-open-sans font-bold text-sm ${isExploreActive ? 'text-[#248CD0]' : 'text-[#000000]'}`}>
+            Explore
+          </span>
         </button>
 
         {/* Search Chats Button */}
