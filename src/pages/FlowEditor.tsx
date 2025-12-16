@@ -31,6 +31,7 @@ import {
 } from '../components/flow/nodes';
 import { ConfigSidebar, FlowToolbar } from '../components/flow';
 import { ProgramModuleType, type ProgramModule } from '../types/alarm';
+import { getLayoutedElements, areNodesCongested } from '../utils/layoutUtils';
 
 // Define custom node types
 const nodeTypes: NodeTypes = {
@@ -89,9 +90,10 @@ function nodeToModule(node: Node<BaseNodeData>): ProgramModule {
     x: Math.round(node.position.x),
     y: Math.round(node.position.y),
     name: node.data.label,
-    inputs: node.data.inputs || [],
-    classes: node.data.classes || [],
-    parameters: node.data.parameters || [],
+    // Filter out empty strings when saving to backend
+    inputs: (node.data.inputs || []).filter((s) => s.trim()),
+    classes: (node.data.classes || []).filter((s) => s.trim()),
+    parameters: (node.data.parameters || []).filter((s) => s.trim()),
   };
 }
 
@@ -144,8 +146,22 @@ export function FlowEditor() {
     if (alarmData?.alarmPattern?.programModules) {
       const initialNodes = alarmData.alarmPattern.programModules.map(moduleToNode);
       const initialEdges = createEdgesFromNodes(initialNodes);
-      setNodes(initialNodes);
-      setEdges(initialEdges);
+
+      // Check if nodes are congested and apply auto-layout if needed
+      if (initialNodes.length > 5 || areNodesCongested(initialNodes)) {
+        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+          initialNodes,
+          initialEdges,
+          'LR' // Left-to-right layout
+        );
+        setNodes(layoutedNodes);
+        setEdges(layoutedEdges);
+      } else {
+        // Use original positions for small, non-congested layouts
+        setNodes(initialNodes);
+        setEdges(initialEdges);
+      }
+
       setHasChanges(false);
     } else if (isNewFlow) {
       // Start with empty canvas for new flow
@@ -246,6 +262,28 @@ export function FlowEditor() {
     }
   }, [setNodes, setEdges]);
 
+  // Auto-layout nodes
+  const handleAutoLayout = useCallback(() => {
+    setNodes((nds) => {
+      setEdges((eds) => {
+        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+          nds,
+          eds,
+          'LR' // Left-to-right layout
+        );
+        setEdges(layoutedEdges);
+        return layoutedEdges;
+      });
+      const { nodes: layoutedNodes } = getLayoutedElements(
+        nds,
+        edges,
+        'LR'
+      );
+      setHasChanges(true);
+      return layoutedNodes;
+    });
+  }, [setNodes, setEdges, edges]);
+
   // Save changes
   const handleSave = useCallback(async () => {
     if (!key || isNewFlow) {
@@ -307,6 +345,7 @@ export function FlowEditor() {
         onBack={handleBack}
         onAddNode={handleAddNode}
         onClearAll={handleClearAll}
+        onAutoLayout={handleAutoLayout}
       />
 
       {/* Main Content */}

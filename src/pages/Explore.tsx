@@ -3,28 +3,42 @@
  * Displays alarm cards in a grid with discipline filtering
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import gsap from 'gsap';
 import { IoCloudUpload } from 'react-icons/io5';
 import { MainLayout } from '../components/layout';
 import { AlarmCard, DisciplineTabs, ImportModal } from '../components/explore';
-import { useDisciplines, useAlarmFlowsByDiscipline } from '../hooks/useAlarms';
+import { useAllAlarmFlows } from '../hooks/useAlarms';
 
 export function Explore() {
   const headerRef = useRef<HTMLDivElement>(null);
   const [selectedDisciplineId, setSelectedDisciplineId] = useState<string | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
 
-  // Fetch disciplines
-  const { data: disciplinesData, isLoading: disciplinesLoading } = useDisciplines();
+  // Fetch ALL alarm flows at once (cached for 1 hour)
+  const { data: allFlowsData, isLoading } = useAllAlarmFlows();
 
-  // Fetch alarm flows when a discipline is selected
-  const { data: flowsData, isLoading: flowsLoading } = useAlarmFlowsByDiscipline(selectedDisciplineId);
-console.log('--------data--------------', JSON.stringify(flowsData));
-  // Get selected discipline name for display
-  const selectedDisciplineName = disciplinesData?.disciplines?.find(
-    (d) => d.id === selectedDisciplineId
-  )?.name || '';
+  // Extract disciplines list from cached data (for tabs)
+  const disciplines = useMemo(() => {
+    if (!allFlowsData) return [];
+    return allFlowsData.map((flow) => ({
+      id: flow.discipline.id,
+      name: flow.discipline.name,
+    }));
+  }, [allFlowsData]);
+
+  // Filter flows by selected discipline (client-side, NO API call)
+  // When "All" is selected (null), show all disciplines
+  const filteredFlowsData = useMemo(() => {
+    if (!allFlowsData) return [];
+    if (selectedDisciplineId === null) {
+      // Show all disciplines
+      return allFlowsData;
+    }
+    // Filter to selected discipline
+    const found = allFlowsData.find((d) => d.discipline.id === selectedDisciplineId);
+    return found ? [found] : [];
+  }, [selectedDisciplineId, allFlowsData]);
 
   // Header animation
   useEffect(() => {
@@ -37,18 +51,9 @@ console.log('--------data--------------', JSON.stringify(flowsData));
     }
   }, []);
 
-  // Auto-select first discipline when disciplines load
-  useEffect(() => {
-    if (disciplinesData?.disciplines && disciplinesData.disciplines.length > 0) {
-      setSelectedDisciplineId(disciplinesData.disciplines[0].id);
-    }
-  }, [disciplinesData]);
-
   const handleSelectDiscipline = (disciplineId: string | null) => {
     setSelectedDisciplineId(disciplineId);
   };
-
-  const isLoading = disciplinesLoading || (selectedDisciplineId && flowsLoading);
 
   return (
     <MainLayout>
@@ -71,9 +76,9 @@ console.log('--------data--------------', JSON.stringify(flowsData));
         </div>
 
         {/* Discipline Tabs */}
-        {disciplinesData?.disciplines && (
+        {disciplines.length > 0 && (
           <DisciplineTabs
-            disciplines={disciplinesData.disciplines}
+            disciplines={disciplines}
             selectedDisciplineId={selectedDisciplineId}
             onSelectDiscipline={handleSelectDiscipline}
           />
@@ -82,7 +87,7 @@ console.log('--------data--------------', JSON.stringify(flowsData));
         {/* Featured Section */}
         <div className="mb-4">
           <h2 className="text-lg font-semibold text-gray-800">
-            {selectedDisciplineId ? 'Alarm Flows' : 'Featured'}
+            {selectedDisciplineId ? 'Alarm Flows' : 'All Alarm Flows'}
           </h2>
         </div>
 
@@ -94,58 +99,60 @@ console.log('--------data--------------', JSON.stringify(flowsData));
         )}
 
         {/* Empty State */}
-        {!isLoading &&
-          selectedDisciplineId &&
-          (!flowsData?.disciplineTypes?.length ||
-            flowsData.disciplineTypes.every((t) => !t.alarms?.length)) && (
-            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-              <p className="text-lg">No alarm flows found for this discipline</p>
-            </div>
-          )}
-
-        {/* Grouped Cards by Discipline Type */}
-        {!isLoading &&
-          flowsData?.disciplineTypes &&
-          flowsData.disciplineTypes.some((t) => t.alarms?.length > 0) && (
-            <div className="space-y-8">
-              {flowsData.disciplineTypes.map((typeGroup) => {
-                if (!typeGroup.alarms || typeGroup.alarms.length === 0) {
-                  return null;
-                }
-
-                return (
-                  <section key={typeGroup.disciplineType.id}>
-                    {/* Discipline Type Header */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <h3 className="text-md font-semibold text-gray-700">
-                        {typeGroup.disciplineType.name}
-                      </h3>
-                      <span className="px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-500">
-                        {typeGroup.alarms.length} {typeGroup.alarms.length === 1 ? 'alarm' : 'alarms'}
-                      </span>
-                    </div>
-
-                    {/* Alarm Cards Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                      {typeGroup.alarms.map((alarm, index) => (
-                        <AlarmCard
-                          key={alarm.alarmPatternKey}
-                          alarm={alarm}
-                          disciplineName={flowsData.discipline?.name || selectedDisciplineName}
-                          index={index}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                );
-              })}
-            </div>
-          )}
-
-        {/* All view - show message */}
-        {!isLoading && !selectedDisciplineId && (
+        {!isLoading && filteredFlowsData.length === 0 && (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-            <p className="text-lg">Select a discipline to view alarm flows</p>
+            <p className="text-lg">No alarm flows found</p>
+          </div>
+        )}
+
+        {/* Grouped Cards by Discipline and Type */}
+        {!isLoading && filteredFlowsData.length > 0 && (
+          <div className="space-y-8">
+            {filteredFlowsData.map((disciplineData) => (
+              <div key={disciplineData.discipline.id}>
+                {/* Show discipline name when "All" is selected */}
+                {selectedDisciplineId === null && (
+                  <div className="flex items-center gap-2 mb-4">
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {disciplineData.discipline.name}
+                    </h3>
+                  </div>
+                )}
+
+                {/* Discipline Types */}
+                {disciplineData.disciplineTypes?.map((typeGroup) => {
+                  if (!typeGroup.alarms || typeGroup.alarms.length === 0) {
+                    return null;
+                  }
+
+                  return (
+                    <section key={typeGroup.disciplineType.id} className="mb-6">
+                      {/* Discipline Type Header */}
+                      <div className="flex items-center gap-3 mb-4">
+                        <h4 className="text-md font-semibold text-gray-700">
+                          {typeGroup.disciplineType.name}
+                        </h4>
+                        <span className="px-2 py-0.5 bg-gray-100 rounded-full text-xs text-gray-500">
+                          {typeGroup.alarms.length} {typeGroup.alarms.length === 1 ? 'alarm' : 'alarms'}
+                        </span>
+                      </div>
+
+                      {/* Alarm Cards Grid */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        {typeGroup.alarms.map((alarm, index) => (
+                          <AlarmCard
+                            key={alarm.alarmPatternKey}
+                            alarm={alarm}
+                            disciplineName={disciplineData.discipline.name}
+                            index={index}
+                          />
+                        ))}
+                      </div>
+                    </section>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         )}
       </div>

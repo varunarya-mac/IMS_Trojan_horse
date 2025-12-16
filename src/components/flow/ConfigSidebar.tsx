@@ -23,38 +23,46 @@ export function ConfigSidebar({
   onDeleteNode,
 }: ConfigSidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
+  const previousNodeIdRef = useRef<string | null>(null);
 
-  // Slide in animation
+  // Slide in animation - only when a different node is selected
   useEffect(() => {
     if (sidebarRef.current && selectedNode) {
-      gsap.fromTo(
-        sidebarRef.current,
-        { x: 50, opacity: 0 },
-        { x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
-      );
+      // Only animate if this is a different node than before
+      if (previousNodeIdRef.current !== selectedNode.id) {
+        gsap.fromTo(
+          sidebarRef.current,
+          { x: 50, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.3, ease: 'power2.out' }
+        );
+        previousNodeIdRef.current = selectedNode.id;
+      }
     }
   }, [selectedNode]);
 
   if (!selectedNode) return null;
 
-  const { data, position } = selectedNode;
+  const { data } = selectedNode;
 
   const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onUpdateNode(selectedNode.id, { label: e.target.value });
   };
 
   const handleInputsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const inputs = e.target.value.split('\n').filter((s) => s.trim());
+    // Split by newline but don't filter while typing to preserve empty lines
+    const inputs = e.target.value.split('\n');
     onUpdateNode(selectedNode.id, { inputs });
   };
 
   const handleClassesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const classes = e.target.value.split('\n').filter((s) => s.trim());
+    // Split by newline but don't filter while typing to preserve empty lines
+    const classes = e.target.value.split('\n');
     onUpdateNode(selectedNode.id, { classes });
   };
 
   const handleParametersChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const parameters = e.target.value.split('\n').filter((s) => s.trim());
+    // Split by newline but don't filter while typing to preserve empty lines
+    const parameters = e.target.value.split('\n');
     onUpdateNode(selectedNode.id, { parameters });
   };
 
@@ -89,7 +97,7 @@ export function ConfigSidebar({
               type="text"
               value={data.label}
               onChange={handleLabelChange}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -99,7 +107,7 @@ export function ConfigSidebar({
             <input
               type="text"
               placeholder="Auto-generated"
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               disabled
             />
           </div>
@@ -118,7 +126,7 @@ export function ConfigSidebar({
               value={data.inputs?.join('\n') || ''}
               onChange={handleInputsChange}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               placeholder="$variable_name"
             />
           </div>
@@ -132,7 +140,7 @@ export function ConfigSidebar({
               value={data.classes?.join('\n') || ''}
               onChange={handleClassesChange}
               rows={2}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               placeholder="class_name"
             />
           </div>
@@ -146,34 +154,9 @@ export function ConfigSidebar({
               value={data.parameters?.join('\n') || ''}
               onChange={handleParametersChange}
               rows={2}
-              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm text-gray-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               placeholder="parameter_value"
             />
-          </div>
-        </div>
-
-        {/* Coordinates Section */}
-        <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">COORDINATES</h3>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">X</label>
-              <input
-                type="number"
-                value={Math.round(position.x)}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50"
-              />
-            </div>
-            <div>
-              <label className="block text-sm text-gray-600 mb-1">Y</label>
-              <input
-                type="number"
-                value={Math.round(position.y)}
-                readOnly
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-gray-50"
-              />
-            </div>
           </div>
         </div>
       </div>

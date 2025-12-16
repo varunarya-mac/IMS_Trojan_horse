@@ -5,10 +5,15 @@
 
 import { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-import type { DisciplineDTO } from '../../types/alarm';
+
+// Simplified discipline type for tabs (only needs id and name)
+interface DisciplineItem {
+  id: string;
+  name: string;
+}
 
 interface DisciplineTabsProps {
-  disciplines: DisciplineDTO[];
+  disciplines: DisciplineItem[];
   selectedDisciplineId: string | null;
   onSelectDiscipline: (disciplineId: string | null) => void;
 }

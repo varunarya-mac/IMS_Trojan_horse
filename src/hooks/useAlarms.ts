@@ -14,6 +14,7 @@ import type {
 export const alarmKeys = {
   all: ['alarms'] as const,
   disciplines: () => [...alarmKeys.all, 'disciplines'] as const,
+  allFlows: () => [...alarmKeys.all, 'flows', 'all'] as const,
   alarmFlows: (disciplineTypeId: string) =>
     [...alarmKeys.all, 'flows', disciplineTypeId] as const,
   alarmFlowsByDiscipline: (disciplineId: string) =>
@@ -30,19 +31,33 @@ export function useDisciplines() {
   return useQuery({
     queryKey: alarmKeys.disciplines(),
     queryFn: () => alarmApi.getDisciplines(),
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 60 * 60 * 1000, // 1 hour
+  });
+}
+
+/**
+ * Fetch ALL alarm flows for all disciplines at once
+ * Data is cached for 1 hour and filtered client-side
+ */
+export function useAllAlarmFlows() {
+  return useQuery({
+    queryKey: alarmKeys.allFlows(),
+    queryFn: () => alarmApi.getAllAlarmFlows(),
+    staleTime: 60 * 60 * 1000, // 1 hour - data stays fresh for 1 hour
+    gcTime: 24 * 60 * 60 * 1000, // Keep in cache for 24 hours
   });
 }
 
 /**
  * Fetch alarm flows for a discipline (all types under the discipline)
+ * @deprecated Use useAllAlarmFlows() instead for better caching
  */
 export function useAlarmFlowsByDiscipline(disciplineId: string | null) {
   return useQuery({
     queryKey: alarmKeys.alarmFlowsByDiscipline(disciplineId || ''),
     queryFn: () => alarmApi.getAlarmFlowsByDiscipline(disciplineId!),
     enabled: !!disciplineId,
-    staleTime: 2 * 60 * 1000, // 2 minutes
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 }
 

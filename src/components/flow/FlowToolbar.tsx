@@ -11,6 +11,7 @@ import {
   IoTrash,
   IoRefresh,
   IoChevronDown,
+  IoGitNetwork,
 } from 'react-icons/io5';
 import { ProgramModuleType } from '../../types/alarm';
 
@@ -23,6 +24,7 @@ interface FlowToolbarProps {
   onBack: () => void;
   onAddNode: (type: number) => void;
   onClearAll: () => void;
+  onAutoLayout: () => void;
 }
 
 const nodeTypes = [
@@ -49,6 +51,7 @@ export function FlowToolbar({
   onBack,
   onAddNode,
   onClearAll,
+  onAutoLayout,
 }: FlowToolbarProps) {
   const [showAddMenu, setShowAddMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -104,6 +107,15 @@ export function FlowToolbar({
             </div>
           )}
         </div>
+
+        {/* Auto Layout */}
+        <button
+          onClick={onAutoLayout}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          title="Auto-arrange nodes"
+        >
+          <IoGitNetwork className="w-5 h-5 text-gray-500" />
+        </button>
 
         {/* Clear All */}
         <button

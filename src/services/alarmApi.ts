@@ -92,6 +92,14 @@ export const alarmApi = {
   },
 
   /**
+   * Get ALL alarm flows for all disciplines at once
+   * Used for caching all data upfront and filtering client-side
+   */
+  async getAllAlarmFlows(): Promise<NewAlarmFlowsResponse[]> {
+    return executeFunction<NewAlarmFlowsResponse[]>('/alarm-flows', 'GET');
+  },
+
+  /**
    * Get a specific alarm pattern by key
    */
   async getAlarmPattern(
