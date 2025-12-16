@@ -28,7 +28,7 @@ client
 
 const functions = new Functions(client);
 
-const FUNCTION_ID = '693f18b1001f03f4448f';
+const FUNCTION_ID = APPWRITE_CONFIG.alarm_manager_function_ID;
 
 /**
  * Execute an Appwrite function with the given path and method
