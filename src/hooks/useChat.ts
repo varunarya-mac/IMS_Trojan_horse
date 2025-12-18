@@ -30,7 +30,7 @@ export function useChats(limit: number = 20) {
   return useQuery({
     queryKey: chatKeys.list(),
     queryFn: () => chatApi.listChats(limit, 0),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 60 * 1000, // 60 seconds
   });
 }
 
@@ -55,7 +55,7 @@ export function useChatsPaginated(limit: number = 20) {
       // Return the next offset
       return totalFetched;
     },
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 60 * 1000, // 60 seconds
   });
 }
 
