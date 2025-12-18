@@ -29,7 +29,6 @@ export const BaseNode = memo(function BaseNode({
   icon,
 }: BaseNodeProps) {
   const hasInputs = data.inputs && data.inputs.length > 0;
-  const hasOutputs = data.outputs && data.outputs.length > 0;
 
   return (
     <div

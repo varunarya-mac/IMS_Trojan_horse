@@ -90,7 +90,6 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
         {steps.map((step, index) => {
           const isActive = index === stepIndex;
           const isCompleted = index < stepIndex || currentStep === 'complete';
-          const isPending = index > stepIndex;
 
           return (
             <div

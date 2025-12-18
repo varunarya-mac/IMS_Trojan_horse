@@ -100,7 +100,7 @@ export function useUpdateAlarmPattern() {
       alarmPatternKey: string;
       data: UpdateAlarmPatternRequest;
     }) => alarmApi.updateAlarmPattern(alarmPatternKey, data),
-    onSuccess: (result, variables) => {
+    onSuccess: (_result, variables) => {
       // Invalidate related queries
       queryClient.invalidateQueries({
         queryKey: alarmKeys.alarmPattern(variables.alarmPatternKey),
@@ -168,7 +168,7 @@ export function useRollbackAlarmPattern() {
       targetVersion: number;
       reason?: string;
     }) => alarmApi.rollbackAlarmPattern(alarmPatternKey, targetVersion, reason),
-    onSuccess: (result, variables) => {
+    onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
         queryKey: alarmKeys.alarmPattern(variables.alarmPatternKey),
       });

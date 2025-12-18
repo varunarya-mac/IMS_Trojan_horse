@@ -3,7 +3,7 @@
  * Visual flow editor using React Flow for alarm patterns
  */
 
-import { useCallback, useMemo, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ReactFlow, {
   Background,
@@ -266,7 +266,7 @@ export function FlowEditor() {
   const handleAutoLayout = useCallback(() => {
     setNodes((nds) => {
       setEdges((eds) => {
-        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+        const { edges: layoutedEdges } = getLayoutedElements(
           nds,
           eds,
           'LR' // Left-to-right layout
@@ -274,13 +274,13 @@ export function FlowEditor() {
         setEdges(layoutedEdges);
         return layoutedEdges;
       });
-      const { nodes: layoutedNodes } = getLayoutedElements(
+      const { nodes: layoutedNodesResult } = getLayoutedElements(
         nds,
         edges,
         'LR'
       );
       setHasChanges(true);
-      return layoutedNodes;
+      return layoutedNodesResult;
     });
   }, [setNodes, setEdges, edges]);
 

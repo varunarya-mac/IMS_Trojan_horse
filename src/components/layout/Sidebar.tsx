@@ -1,44 +1,27 @@
-import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@context/AuthContext';
+import { useChatContext } from '@context/ChatContext';
+import { useChats } from '@hooks/useChat';
 import {
   IoAddOutline,
   IoSearchOutline,
-  IoChevronDownOutline,
   IoNotificationsOutline,
   IoCompassOutline,
+  IoChatbubbleOutline,
 } from 'react-icons/io5';
 import { FiLogOut } from 'react-icons/fi';
 import logoSvg from '@assets/logo.svg';
-
-interface MenuItem {
-  id: string;
-  label: string;
-}
-
-const agentItems: MenuItem[] = [
-  { id: '1', label: 'Refrigeration Alarming' },
-  { id: '2', label: 'Refrigeration Alarming' },
-  { id: '3', label: 'Refrigeration Alarming' },
-];
-
-const chatItems: MenuItem[] = [
-  { id: '1', label: 'LT1_HG76983289' },
-  { id: '2', label: 'LT1_HG76983289' },
-  { id: '3', label: 'LT1_HG76983289' },
-  { id: '4', label: 'LT1_HG76983289' },
-  { id: '5', label: 'LT1_HG76983289' },
-  { id: '6', label: 'LT1_HG76983289' },
-  { id: '7', label: 'LT1_HG76983289' },
-];
 
 const Sidebar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [agentsExpanded, setAgentsExpanded] = useState(true);
+  const { currentChatId, setCurrentChatId, startNewChat } = useChatContext();
+  const { data: chatsData, isLoading: isChatsLoading } = useChats();
 
   const isExploreActive = location.pathname === '/explore' || location.pathname.startsWith('/flow/');
+  const isHomeActive = location.pathname === '/';
+  const isChatsActive = location.pathname === '/chats';
 
   const handleLogout = async () => {
     try {
@@ -47,6 +30,23 @@ const Sidebar = () => {
       console.error('Logout error:', error);
     }
   };
+
+  const handleNewChat = () => {
+    startNewChat();
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
+
+  const handleChatSelect = (chatId: string) => {
+    setCurrentChatId(chatId);
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
+  };
+
+  // Get recent chats (limit to 7 for sidebar)
+  const recentChats = chatsData?.chats?.slice(0, 7) || [];
 
   return (
     <aside className="w-[290px] h-screen bg-[#F5F7FB] flex flex-col relative">
@@ -58,11 +58,18 @@ const Sidebar = () => {
       {/* Action Buttons */}
       <div className="px-5 space-y-2">
         {/* New Chat Button */}
-        <button className="w-full flex items-center gap-3 px-4 py-2 rounded-[10px] hover:bg-white transition-colors">
+        <button
+          onClick={handleNewChat}
+          className={`w-full flex items-center gap-3 px-4 py-2 rounded-[10px] transition-colors ${
+            isHomeActive && !currentChatId ? 'bg-white shadow-sm' : 'hover:bg-white'
+          }`}
+        >
           <div className="w-[29px] h-[29px] flex items-center justify-center">
-            <IoAddOutline className="w-5 h-5 text-[#1D2441]" />
+            <IoAddOutline className={`w-5 h-5 ${isHomeActive && !currentChatId ? 'text-[#248CD0]' : 'text-[#1D2441]'}`} />
           </div>
-          <span className="font-open-sans font-bold text-sm text-[#000000]">New Chat</span>
+          <span className={`font-open-sans font-bold text-sm ${isHomeActive && !currentChatId ? 'text-[#248CD0]' : 'text-[#000000]'}`}>
+            New Chat
+          </span>
         </button>
 
         {/* Explore Button */}
@@ -81,11 +88,18 @@ const Sidebar = () => {
         </button>
 
         {/* Search Chats Button */}
-        <button className="w-full flex items-center gap-3 px-4 py-2 rounded-[10px] hover:bg-white transition-colors">
+        <button
+          onClick={() => navigate('/chats')}
+          className={`w-full flex items-center gap-3 px-4 py-2 rounded-[10px] transition-colors ${
+            isChatsActive ? 'bg-white shadow-sm' : 'hover:bg-white'
+          }`}
+        >
           <div className="w-[29px] h-[29px] flex items-center justify-center">
-            <IoSearchOutline className="w-5 h-5 text-[#1D2441]" />
+            <IoSearchOutline className={`w-5 h-5 ${isChatsActive ? 'text-[#248CD0]' : 'text-[#1D2441]'}`} />
           </div>
-          <span className="font-open-sans font-bold text-sm text-[#000000]">Search Chats</span>
+          <span className={`font-open-sans font-bold text-sm ${isChatsActive ? 'text-[#248CD0]' : 'text-[#000000]'}`}>
+            Search Chats
+          </span>
         </button>
 
         {/* To Action Button */}
@@ -100,56 +114,51 @@ const Sidebar = () => {
       {/* Divider */}
       <div className="mx-6 my-4 border-t border-[#C4D5F7]" />
 
-      {/* Agents Section */}
-      <div className="px-5">
-        <button
-          onClick={() => setAgentsExpanded(!agentsExpanded)}
-          className="flex items-center gap-2 mb-2"
-        >
-          <span className="font-open-sans font-bold text-sm text-[#000000]">Agents</span>
-          <IoChevronDownOutline
-            className={`w-4 h-4 text-[#000000] transition-transform ${agentsExpanded ? '' : '-rotate-90'}`}
-          />
-        </button>
-
-        {agentsExpanded && (
-          <div className="space-y-1">
-            {agentItems.map((item) => (
-              <button
-                key={item.id}
-                className="w-full text-left px-3 py-2 rounded-[10px] hover:bg-white transition-colors"
-              >
-                <span className="font-open-sans font-normal text-sm text-[#000000]">
-                  {item.label}
-                </span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Divider */}
-      <div className="mx-6 my-4 border-t border-[#C4D5F7]" />
-
       {/* Chats Section */}
       <div className="px-5 flex-1 overflow-hidden flex flex-col">
         <span className="font-open-sans font-bold text-sm text-[#000000] mb-2">Chats</span>
 
         <div className="flex-1 overflow-y-auto space-y-1">
-          {chatItems.map((item) => (
-            <button
-              key={item.id}
-              className="w-full text-left px-3 py-2 rounded-[10px] hover:bg-white transition-colors"
-            >
-              <span className="font-open-sans font-normal text-sm text-[#000000]">{item.label}</span>
-            </button>
-          ))}
+          {isChatsLoading ? (
+            <div className="px-3 py-2">
+              <span className="font-open-sans text-sm text-[#A9A9A9]">Loading...</span>
+            </div>
+          ) : recentChats.length > 0 ? (
+            recentChats.map((chat) => {
+              const isActive = currentChatId === chat.$id && isHomeActive;
+              return (
+                <button
+                  key={chat.$id}
+                  onClick={() => handleChatSelect(chat.$id)}
+                  className={`w-full text-left px-3 py-2 rounded-[10px] transition-colors flex items-center gap-2 ${
+                    isActive ? 'bg-white shadow-sm' : 'hover:bg-white'
+                  }`}
+                >
+                  <IoChatbubbleOutline className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-[#248CD0]' : 'text-[#A9A9A9]'}`} />
+                  <span className={`font-open-sans font-normal text-sm truncate ${isActive ? 'text-[#248CD0]' : 'text-[#000000]'}`}>
+                    {chat.title || 'Untitled Chat'}
+                  </span>
+                </button>
+              );
+            })
+          ) : (
+            <div className="px-3 py-2">
+              <span className="font-open-sans text-sm text-[#A9A9A9]">No chats yet</span>
+            </div>
+          )}
         </div>
 
         {/* View all chats */}
-        <button className="w-full text-left px-3 py-2 mt-2 rounded-[10px] hover:bg-white transition-colors">
-          <span className="font-open-sans font-normal text-sm text-[#000000]">View all chats</span>
-        </button>
+        {recentChats.length > 0 && (
+          <button
+            onClick={() => navigate('/chats')}
+            className="w-full text-left px-3 py-2 mt-2 rounded-[10px] hover:bg-white transition-colors"
+          >
+            <span className="font-open-sans font-normal text-sm text-[#A9A9A9] hover:text-[#248CD0]">
+              View all chats
+            </span>
+          </button>
+        )}
       </div>
 
       {/* User Section - Bottom */}
