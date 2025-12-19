@@ -5,7 +5,7 @@ import path from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: process.env.NODE_ENV === 'production' ? '/IMS_Trojan_horse/' : '/',
+  base: '/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
