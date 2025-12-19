@@ -1,3 +1,8 @@
+/**
+ * Auth Service
+ * Appwrite authentication service
+ */
+
 import { Client, Account, Models } from 'appwrite';
 import { APPWRITE_CONFIG } from '@config/appwrite';
 

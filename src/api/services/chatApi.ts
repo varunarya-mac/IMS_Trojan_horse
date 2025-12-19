@@ -5,8 +5,8 @@
 
 import { Functions, Storage, ID } from 'appwrite';
 import { APPWRITE_CONFIG } from '@config/appwrite';
-// Use the authenticated client from appwrite.ts (shares session)
-import { client } from './appwrite';
+// Use the authenticated client from authService (shares session)
+import { client } from './authService';
 import type {
   ChatApiResponse,
   CreateChatRequest,
@@ -16,7 +16,7 @@ import type {
   SendMessageRequest,
   SendMessageResponse,
   UploadFileResponse,
-} from '../types/chat';
+} from '@types/chat';
 
 // HTTP method type for Appwrite function execution
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

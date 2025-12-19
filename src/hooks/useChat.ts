@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
-import { chatApi } from '../services/chatApi';
+import { chatApi } from '@api/services/chatApi';
 import { useRealtimeMessageManager } from './useRealtimeMessage';
 import type {
   SendMessageRequest,
@@ -12,8 +12,8 @@ import type {
   GetChatResponse,
   RealtimeMessagePayload,
   Message,
-} from '../types/chat';
-import { isProcessingMessage } from '../types/chat';
+} from '@types/chat';
+import { isProcessingMessage } from '@types/chat';
 
 // Query keys
 export const chatKeys = {

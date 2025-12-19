@@ -4,7 +4,7 @@
  */
 
 import RecommendationCard from './RecommendationCard';
-import type { Recommendation } from '../../types/chat';
+import type { Recommendation } from '@types/chat';
 
 interface RecommendationListProps {
   recommendations: Recommendation[];

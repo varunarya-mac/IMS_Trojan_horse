@@ -30,7 +30,7 @@ import {
   type BaseNodeData,
 } from '../components/flow/nodes';
 import { ConfigSidebar, FlowToolbar } from '../components/flow';
-import { ProgramModuleType, type ProgramModule } from '../types/alarm';
+import { ProgramModuleType, type ProgramModule } from '@types/alarm';
 import { getLayoutedElements, areNodesCongested } from '../utils/layoutUtils';
 
 // Define custom node types

@@ -15,10 +15,10 @@ import {
   IoEllipsisHorizontal,
 } from 'react-icons/io5';
 import { useQueryClient } from '@tanstack/react-query';
-import { alarmApi } from '../../services/alarmApi';
-import { alarmKeys } from '../../hooks/useAlarms';
+import { alarmApi } from '@api/services/alarmApi';
+import { alarmKeys } from '@hooks/useAlarms';
 import { ImportSummary } from './ImportSummary';
-import type { ImportSummaryDTO } from '../../types/alarm';
+import type { ImportSummaryDTO } from '@types/alarm';
 
 interface ImportModalProps {
   isOpen: boolean;

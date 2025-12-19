@@ -4,7 +4,7 @@
  */
 
 import { IoDocumentTextOutline } from 'react-icons/io5';
-import type { Message } from '../../types/chat';
+import type { Message } from '@types/chat';
 
 interface UserMessageProps {
   message: Message;

@@ -6,8 +6,8 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { IoExpandOutline, IoDownloadOutline, IoRefreshOutline } from 'react-icons/io5';
-import { chatApi } from '../../services/chatApi';
-import type { GraphConfig } from '../../types/chat';
+import { chatApi } from '@api/services/chatApi';
+import type { GraphConfig } from '@types/chat';
 
 interface GraphDisplayProps {
   graphImageId: string;

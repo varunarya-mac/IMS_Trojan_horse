@@ -4,10 +4,10 @@
  */
 
 import { useEffect, useRef, useCallback } from 'react';
-import { appwriteClient } from '@services/chatApi';
+import { appwriteClient } from '@api/services/chatApi';
 import { APPWRITE_CONFIG } from '@config/appwrite';
-import { isProcessingMessage } from '../types/chat';
-import type { RealtimeMessagePayload, Message } from '../types/chat';
+import { isProcessingMessage } from '@types/chat';
+import type { RealtimeMessagePayload, Message } from '@types/chat';
 
 // Subscription timeout (60 seconds)
 const SUBSCRIPTION_TIMEOUT = 200 * 1000;

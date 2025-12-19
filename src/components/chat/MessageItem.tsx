@@ -5,7 +5,7 @@
 
 import UserMessage from './UserMessage';
 import AssistantMessage from './AssistantMessage';
-import type { Message, Recommendation } from '../../types/chat';
+import type { Message, Recommendation } from '@types/chat';
 
 interface MessageItemProps {
   message: Message;

@@ -13,7 +13,7 @@ import {
   IoDocumentTextOutline,
   IoTimeOutline,
 } from 'react-icons/io5';
-import type { Chat } from '../types/chat';
+import type { Chat } from '@types/chat';
 
 const ChatHistory = () => {
   const navigate = useNavigate();

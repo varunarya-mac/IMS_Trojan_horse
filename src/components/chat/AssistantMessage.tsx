@@ -6,8 +6,8 @@
 import RecommendationList from './RecommendationList';
 import DatapointsTable from './DatapointsTable';
 import GraphDisplay from './GraphDisplay';
-import type { Message, Recommendation } from '../../types/chat';
-import { isProcessingMessage } from '../../types/chat';
+import type { Message, Recommendation } from '@types/chat';
+import { isProcessingMessage } from '@types/chat';
 
 /**
  * Processing Indicator Component

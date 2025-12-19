@@ -4,11 +4,11 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { alarmApi } from '../services/alarmApi';
+import { alarmApi } from '@api/services/alarmApi';
 import type {
   UpdateAlarmPatternRequest,
   CreateAlarmPatternRequest,
-} from '../types/alarm';
+} from '@types/alarm';
 
 // Query keys
 export const alarmKeys = {

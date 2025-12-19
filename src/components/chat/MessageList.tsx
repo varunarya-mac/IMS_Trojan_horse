@@ -6,7 +6,7 @@
 import { useRef, useEffect } from 'react';
 import MessageItem from './MessageItem';
 import LoadingIndicator from './LoadingIndicator';
-import type { Message, Recommendation } from '../../types/chat';
+import type { Message, Recommendation } from '@types/chat';
 
 interface MessageListProps {
   messages: Message[];

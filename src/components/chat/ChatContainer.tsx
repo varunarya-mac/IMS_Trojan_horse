@@ -11,8 +11,8 @@ import MessageList from './MessageList';
 import ChatInput from './ChatInput';
 import EmptyState from './EmptyState';
 import ErrorMessage from './ErrorMessage';
-import type { Message, Recommendation, PendingFile } from '../../types/chat';
-import { isProcessingMessage } from '../../types/chat';
+import type { Message, Recommendation, PendingFile } from '@types/chat';
+import { isProcessingMessage } from '@types/chat';
 
 const ChatContainer = () => {
   const {

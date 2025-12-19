@@ -3,7 +3,7 @@
  * Displays a single recommendation with priority badge and action button
  */
 
-import type { Recommendation } from '../../types/chat';
+import type { Recommendation } from '@types/chat';
 
 interface RecommendationCardProps {
   recommendation: Recommendation;

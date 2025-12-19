@@ -15,7 +15,7 @@ import type {
   UpdateAlarmPatternRequest,
   CreateAlarmPatternRequest,
   ImportSummaryDTO,
-} from '../types/alarm';
+} from '@types/alarm';
 
 // HTTP method type for Appwrite function execution
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, ReactNode, useMemo } from 'react';
-import type { Message, PendingFile } from '../types/chat';
+import type { Message, PendingFile } from '@types/chat';
 
 interface ChatContextType {
   // Current state

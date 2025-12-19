@@ -4,7 +4,7 @@
  */
 
 import { IoArrowUpOutline, IoArrowDownOutline, IoRemoveOutline } from 'react-icons/io5';
-import type { Datapoint } from '../../types/chat';
+import type { Datapoint } from '@types/chat';
 
 interface DatapointsTableProps {
   datapoints: Datapoint[];

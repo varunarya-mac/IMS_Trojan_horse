@@ -7,7 +7,7 @@ import { useState, useRef, useEffect, FormEvent, KeyboardEvent } from 'react';
 import { IoSendOutline, IoMenuOutline } from 'react-icons/io5';
 import FileUploadButton from './FileUploadButton';
 import UploadProgress from './UploadProgress';
-import type { PendingFile } from '../../types/chat';
+import type { PendingFile } from '@types/chat';
 
 interface ChatInputProps {
   onSend: (message: string, file?: PendingFile) => void;
